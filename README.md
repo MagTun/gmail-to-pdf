@@ -22,4 +22,7 @@ Run `4 process files.py`, if you want to:
 
 
 ## Alternatives 
-For different ways of downloading the emails: cf `5 alternatives.py` 
+Different configuration of folder/filename can be found in cf `5 alternatives.py`:
+- folder = subject   / filename = date 
+- folder = threadID  / filename =  emailID
+- no folder          / filename =  date (converted into " 2017_02_04 05-45-32")  + subject
