@@ -9,11 +9,17 @@ Then run the script `1 get labels ids.py`. You will be sent to a consent screen:
 
 
 ## How to use
-Because GMAIL API doesn't use Label name but ID you need to know to first get all the labels' IDs with the script `1 get labels ids.py`  
-Then copy the ID for the label you need `2 download email as eml files.py`  
+*Don't forget to change the folder path*  
+
+Because GMAIL API doesn't use the labels'names but the labels' IDs you need to first get all the labels' IDs with the script `1 get labels ids.py`  
+Then copy the ID for the label you need in `2 download email as eml files.py`  
 Run `2 download email as eml files.py`: your emails will be save as `.eml` file in a subfolder "emails as eml"  
 Open the program eml-to-pdf-converter and load your folder to convert the `.eml` files to `.pdf` files.  
-If you want to only keep the last conversation of each thread, run `4 delete all emails.py`  
+Run `4 process files.py`, if you want to:
+- copy only last emails of a thread 
+- get path of emails with date problem (added zzz in filename)
+- delete all .eml
+
 
 ## Alternatives 
 For different ways of downloading the emails: cf `5 alternatives.py` 
