@@ -14,8 +14,8 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 # set working directory  https://stackoverflow.com/a/1432949/3154274
 # abspath = os.path.abspath(__file__)
 # dname = os.path.dirname(abspath)
-dname = r"C:\Users\user\Desktop\gmail as pdf"
-os.chdir(dname)
+# dname = r"C:\Users\user\Desktop\gmail as pdf"
+# os.chdir(dname)
 
 
 def main():

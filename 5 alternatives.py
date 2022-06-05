@@ -51,18 +51,20 @@ import string
 from datetime import datetime
 
 
-# CUSTOM VAR 
-dname = r"C:\Users\user\Desktop\gmail as pdf"
-folder_to_save_all_emails= working_folder_path+r"\label1"
-labelid = "Label_45"
+# VARIABLES TO EDIT
+labelid = "Label_4186509458417029489"
+eml_folder_name = "Lenny's Newsletter"
+
 
 # set working directory  https://stackoverflow.com/a/1432949/3154274
-# abspath = os.path.abspath(__file__)
-# working_folder_path = os.path.dirname(abspath)
+abspath = os.path.abspath(__file__)
+working_folder_path = os.path.dirname(abspath)
 os.chdir(working_folder_path)
 print("working dir set to ", working_folder_path)
 
 # create folder to save email 
+folder_to_save_all_emails= os.path.join(working_folder_path, eml_folder_name)
+
 if not os.path.exists(folder_to_save_all_emails):
     os.makedirs(folder_to_save_all_emails)
 
@@ -149,49 +151,49 @@ def main():
 
             #  ----------------   folder = same for every email and filename =  date (converted into " 2017_02_04 05-45-32")  + subject   ( )
 
-            # # get the entire email message in an RFC 2822 formatted and base64url encoded string that can be converted to .eml
-            # messageraw= service.users().messages().get(userId="me", id=emails["id"], format="raw", metadataHeaders=None).execute()
-            # # get the headers of the message 
-            # messageheader= service.users().messages().get(userId="me", id=emails["id"], format="full", metadataHeaders=None).execute()
+            # get the entire email message in an RFC 2822 formatted and base64url encoded string that can be converted to .eml
+            messageraw= service.users().messages().get(userId="me", id=emails["id"], format="raw", metadataHeaders=None).execute()
+            # get the headers of the message 
+            messageheader= service.users().messages().get(userId="me", id=emails["id"], format="full", metadataHeaders=None).execute()
 
-            # # retrieve headers
-            # headers=messageheader["payload"]["headers"]
+            # retrieve headers
+            headers=messageheader["payload"]["headers"]
 
-            # #retrieve date  
-            # date= [i['value'] for i in headers if i["name"]=="Date"]
-            # date_as_valid_filename= valid_path_name(date[0])
-            # date_as_filename= convert_date(date_as_valid_filename)
-            # # print(date_as_filename)
+            #retrieve date  
+            date= [i['value'] for i in headers if i["name"]=="Date"]
+            date_as_valid_filename= valid_path_name(date[0])
+            date_as_filename= convert_date(date_as_valid_filename, False)
+            # print(date_as_filename)
   
-            # #retrieve subject 
-            # subject= [i['value'] for i in headers if i["name"]=="Subject"]
-            # print(subject)  
-            # if subject == []:
-            #     subject = ["(no subject)"]
-            # subject_as_foldername=valid_path_name(subject[0])
-            # # print(subject_as_foldername)
+            #retrieve subject 
+            subject= [i['value'] for i in headers if i["name"]=="Subject"]
+            print(subject)  
+            if subject == []:
+                subject = ["(no subject)"]
+            subject_as_foldername=valid_path_name(subject[0])
+            # print(subject_as_foldername)
 
-            # try:
-            #     #convert the raw format into a string format
-            #     msg_str = base64.urlsafe_b64decode(messageraw['raw'].encode('ASCII')) 
-            #     mime_msg = email.message_from_string(msg_str.decode())  
+            try:
+                #convert the raw format into a string format
+                msg_str = base64.urlsafe_b64decode(messageraw['raw'].encode('ASCII')) 
+                mime_msg = email.message_from_string(msg_str.decode())  
 
 
-            #     # set path+filename of the .eml file and save it
+                # set path+filename of the .eml file and save it
 
-            #     path_to_folder = folder_to_save_all_emails
-            #     if not os.path.exists(path_to_folder):
-            #         os.makedirs(path_to_folder)
+                path_to_folder = folder_to_save_all_emails
+                if not os.path.exists(path_to_folder):
+                    os.makedirs(path_to_folder)
                 
-            #     emlfile = os.path.join(path_to_folder, f'{date_as_filename} {subject_as_foldername}.eml')
+                emlfile = os.path.join(path_to_folder, f'{date_as_filename} {subject_as_foldername}.eml')
 
-            #     with open(emlfile, 'w') as outfile:
-            #         gen = email.generator.Generator(outfile)
-            #         gen.flatten(mime_msg)
-            #         print(f"mail saved: {emails['id']} {date_as_filename}")
+                with open(emlfile, 'w') as outfile:
+                    gen = email.generator.Generator(outfile)
+                    gen.flatten(mime_msg)
+                    print(f"mail saved: {emails['id']} {date_as_filename}")
 
-            # except:
-            #     print("error in message ", messageraw["snippet"])
+            except:
+                print("error in message ", messageraw["snippet"])
 
             #  ----------------    END
 
