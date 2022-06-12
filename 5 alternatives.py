@@ -100,6 +100,22 @@ def convert_date(date_var, with_time=True):
         return date_var + " zzz"
 
 
+def get_date(headers, with_time=True):
+    # retrieve date
+    date = [i["value"] for i in headers if i["name"] == "Date"][0]
+    date_as_valid_filename = valid_path_name(date)
+    return convert_date(date_as_valid_filename, with_time)
+
+
+def get_subject(headers):
+    subject_list = [i["value"] for i in headers if i["name"] == "Subject"]
+    # print(f"subject is {subject}")
+    if not subject_list:
+        return "(No subject)"
+    else:
+        subject = subject_list[0]
+        return valid_path_name(subject)
+
 def main():
 
     # create the credential the first time and save it in token.pickle
@@ -164,8 +180,12 @@ def main():
     if not all_message_in_label:
         print("No email LM found.")
     else:
-
+        # get list of .eml files in folder to check if .eml file for email already exists in folder
+        eml_file_list = [
+            f for f in os.listdir(folder_to_save_all_emails) if f.endswith(".eml")
+        ]
         # for each ID in all_message_in_label we *get* the message
+        emails_processed = 0
         for emails in all_message_in_label:
 
             #  ----------------   folder = same for every email and filename =  date (converted into " 2017_02_04 05-45-32")  + subject   ( )
@@ -189,41 +209,41 @@ def main():
             headers = messageheader["payload"]["headers"]
 
             # retrieve date
-            date = [i["value"] for i in headers if i["name"] == "Date"]
-            date_as_valid_filename = valid_path_name(date[0])
-            date_as_filename = convert_date(date_as_valid_filename, False)
-            # print(date_as_filename)
+            date_as_filename = get_date(headers, False)
 
             # retrieve subject
-            subject = [i["value"] for i in headers if i["name"] == "Subject"]
-            print(subject)
-            if subject == []:
-                subject = ["(no subject)"]
-            subject_as_foldername = valid_path_name(subject[0])
+            subject_as_foldername = get_subject(headers)
             # print(subject_as_foldername)
 
-            try:
-                # convert the raw format into a string format
-                msg_str = base64.urlsafe_b64decode(messageraw["raw"].encode("ASCII"))
-                mime_msg = email.message_from_string(msg_str.decode())
+            eml_file_name = os.path.join(
+                folder_to_save_all_emails,
+                f"{date_as_filename} {subject_as_foldername}.eml",
+            )
 
-                # set path+filename of the .eml file and save it
+            if eml_file_name not in eml_file_list:
 
-                path_to_folder = folder_to_save_all_emails
-                if not os.path.exists(path_to_folder):
-                    os.makedirs(path_to_folder)
+                try:
+                    # convert the raw format into a string format
+                    msg_str = base64.urlsafe_b64decode(
+                        messageraw["raw"].encode("ASCII")
+                    )
+                    mime_msg = email.message_from_string(msg_str.decode())
 
-                emlfile = os.path.join(
-                    path_to_folder, f"{date_as_filename} {subject_as_foldername}.eml"
-                )
+                    # set path+filename of the .eml file and save it
 
-                with open(emlfile, "w") as outfile:
-                    gen = email.generator.Generator(outfile)
-                    gen.flatten(mime_msg)
-                    print(f"mail saved: {emails['id']} {date_as_filename}")
+                    eml_file_name = os.path.join(
+                        folder_to_save_all_emails,
+                        f"{date_as_filename} {subject_as_foldername}.eml",
+                    )
 
-            except:
-                print("error in message ", messageraw["snippet"])
+                    with open(eml_file_name, "w") as outfile:
+                        gen = email.generator.Generator(outfile)
+                        gen.flatten(mime_msg)
+                    emails_processed += 1
+                    print(f"Emails saved: {emails_processed}/{len(all_message_in_label)}")
+
+                except:
+                    print("error in message ", messageraw["snippet"])
 
             #  ----------------    END
 
@@ -237,12 +257,12 @@ def main():
             #     msg_str = base64.urlsafe_b64decode(messageraw['raw'].encode('ASCII'))
             #     mime_msg = email.message_from_string(msg_str.decode())
 
-            #     path_to_folder = folder_to_save_all_emails + "\\"+ messageraw["threadId"]
-            #     if not os.path.exists(path_to_folder):
-            #         os.makedirs(path_to_folder)
+            #     folder_to_save_all_emails = folder_to_save_all_emails + "\\"+ messageraw["threadId"]
+            #     if not os.path.exists(folder_to_save_all_emails):
+            #         os.makedirs(folder_to_save_all_emails)
 
-            #     emlfile = os.path.join(path_to_folder, f'{emails["id"]}.eml')
-            #     with open(emlfile, 'w') as outfile:
+            #     eml_file_name = os.path.join(folder_to_save_all_emails, f'{emails["id"]}.eml')
+            #     with open(eml_file_name, 'w') as outfile:
             #         gen = email.generator.Generator(outfile)
             #         gen.flatten(mime_msg)
             #         print(f"mail saved: {emails['id']}")
@@ -269,9 +289,9 @@ def main():
             #     subject = ["(no subject)"]
             # subject_as_foldername=valid_path_name(subject[0])
             # print(subject_as_foldername)
-            # path_to_folder_by_subject = folder_to_save_all_emails + "\\"+ subject_as_foldername
-            # if not os.path.exists(path_to_folder_by_subject):
-            #     os.makedirs(path_to_folder_by_subject)
+            # folder_to_save_all_emails_by_subject = folder_to_save_all_emails + "\\"+ subject_as_foldername
+            # if not os.path.exists(folder_to_save_all_emails_by_subject):
+            #     os.makedirs(folder_to_save_all_emails_by_subject)
 
             # # retrieve date     ( !!!!! a verifier because didn't test with the  try !!!!)
             # date= [i['value'] for i in headers if i["name"]=="Date"]
@@ -282,9 +302,9 @@ def main():
             #     msg_str = base64.urlsafe_b64decode(messageraw['raw'].encode('ASCII'))
             #     mime_msg = email.message_from_string(msg_str.decode())
             #     # set path+filename of the .eml file and save it
-            #     emlfile = os.path.join(path_to_folder_by_subject, f'{date_as_filename}.eml')
+            #     eml_file_name = os.path.join(folder_to_save_all_emails_by_subject, f'{date_as_filename}.eml')
 
-            #     with open(emlfile, 'w') as outfile:
+            #     with open(eml_file_name, 'w') as outfile:
             #         gen = email.generator.Generator(outfile)
             #         gen.flatten(mime_msg)
             #         print(f"mail saved: {subject_as_foldername} {date_as_filename}")
