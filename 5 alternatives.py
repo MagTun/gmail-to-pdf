@@ -150,9 +150,9 @@ def main():
         .execute()
     )
     all_message_in_label = []
+    print(f"first response: {response}")
     if "messages" in response:
         all_message_in_label.extend(response["messages"])
-
     # if several page of message (ex more than 100 message, the first request will only return the first 20. so we need to make another request starting at the nextPageToken)
     while "nextPageToken" in response:
         page_token = response["nextPageToken"]
@@ -169,7 +169,10 @@ def main():
             )
             .execute()
         )
-        all_message_in_label.extend(response["messages"])
+        if response['resultSizeEstimate'] == 0:
+            break 
+        else:
+            all_message_in_label.extend(response["messages"])
 
     # all_message_in_label looks like this
     # for email in all_message_in_label:
