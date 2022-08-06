@@ -14,8 +14,8 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 # set working directory  https://stackoverflow.com/a/1432949/3154274
 # abspath = os.path.abspath(__file__)
 # dname = os.path.dirname(abspath)
-dname = r"C:\Users\user\Desktop\gmail as pdf"
-os.chdir(dname)
+# dname = r"C:\Users\user\Desktop\gmail as pdf"
+# os.chdir(dname)
 
 
 def main():
@@ -50,8 +50,7 @@ def main():
     else:
         print('Labels:')
     for label in labels:
-        print(label['name'] + " "+label['id'])
-
+        print(f"Label Name: {label['name']} Label_id: {label['id']}")
 
 if __name__ == '__main__':
     main()

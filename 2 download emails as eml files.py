@@ -51,18 +51,20 @@ import string
 from datetime import datetime
 
 
-# CUSTOM VAR 
-dname = r"C:\Users\user\Desktop\gmail as pdf"
-folder_to_save_all_emails= working_folder_path+r"\label1"
-labelid = "Label_45"
+# VARIABLES TO EDIT
+labelid = "Label_4186509458417029489"
+eml_folder_name = "Lenny's Newsletter"
+
+
 
 # set working directory  https://stackoverflow.com/a/1432949/3154274
-# abspath = os.path.abspath(__file__)
-# working_folder_path = os.path.dirname(abspath)
+abspath = os.path.abspath(__file__)
+working_folder_path = os.path.dirname(abspath)
 os.chdir(working_folder_path)
 print("working dir set to ", working_folder_path)
 
 # create folder to save email 
+folder_to_save_all_emails= os.path.join(working_folder_path, eml_folder_name)
 if not os.path.exists(folder_to_save_all_emails):
     os.makedirs(folder_to_save_all_emails)
 
