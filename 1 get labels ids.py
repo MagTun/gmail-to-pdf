@@ -50,8 +50,7 @@ def main():
     else:
         print('Labels:')
     for label in labels:
-        print(label['name'] + " "+label['id'])
-
+        print(f"Label Name: {label['name']} Label_id: {label['id']}")
 
 if __name__ == '__main__':
     main()
